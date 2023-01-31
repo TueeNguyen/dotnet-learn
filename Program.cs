@@ -1,4 +1,6 @@
 using Catalog.Repositories;
+using Catalog.Settings;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IItemsRepository, InMemItemsRepository>();
+builder.Services.AddSingleton<IMongoClient>(serviceProvider => {
+    var settings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+    return new MongoClient(settings.ConnectionString);
+})
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
